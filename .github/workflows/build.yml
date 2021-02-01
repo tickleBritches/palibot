@@ -25,12 +25,12 @@ jobs:
       run: dotnet build src/PaliBot.sln --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test src/PaliBot.sln --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=$GITHUB_WORKSPACE/artifacts/ /p:CoverletOutputFormat=\"opencover,json\" -m:1 --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
-      
+      run: dotnet test src/PaliBot.sln --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults /p:CoverletOutputFormat=\"opencover,json\" -m:1 --logger trx --results-directory "TestResults"
+
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v2
       with:
-        name: dotnet-results-${{ matrix.dotnet-version }}
-        path: TestResults-${{ matrix.dotnet-version }}
+        name: dotnet-results
+        path: TestResults
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
