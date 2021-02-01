@@ -6,24 +6,27 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: [ '5.0.x' ]
 
     steps:
+
     - uses: actions/checkout@v2
-    - name: Setup .NET Core SDK ${{ matrix.dotnet }}
-      uses: actions/setup-dotnet@v1.6.0
       with:
-        dotnet-version: ${{ matrix.dotnet-version }}
-    - name: Display dotnet version
-      run: dotnet --version
+        fetch-depth: 0
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
     - name: Install dependencies
       run: dotnet restore src/PaliBot.sln
+
     - name: Build
       run: dotnet build src/PaliBot.sln --configuration Release --no-restore
+
     - name: Test
       run: dotnet test src/PaliBot.sln --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=$GITHUB_WORKSPACE/artifacts/ /p:CoverletOutputFormat=\"opencover,json\" -m:1 --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+      
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v2
       with:
