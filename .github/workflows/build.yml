@@ -25,7 +25,7 @@ jobs:
       run: dotnet build src/PaliBot.sln --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test src/PaliBot.sln --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/coverage.lcov /p:CoverletOutputFormat=lcov -m:1 --logger trx --results-directory "TestResults"
+      run: dotnet test src/PaliBot.sln --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=$GITHUB_WORKSPACE/artifacts/ /p:CoverletOutputFormat=lcov -m:1 --logger trx --results-directory "$GITHUB_WORKSPACE/artifacts/"
 
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v2
