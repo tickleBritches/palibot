@@ -27,6 +27,12 @@ jobs:
     - name: Test
       run: dotnet test src/PaliBot.sln --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=$GITHUB_WORKSPACE/artifacts/ /p:CoverletOutputFormat=lcov -m:1 --logger trx --results-directory "$GITHUB_WORKSPACE/artifacts/"
 
+    - name: Publish coverage report to coveralls.io
+        uses: coverallsapp/github-action@v1.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ${{ github.workspace }}/artifacts//coverage.info
+
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v2
       with:
