@@ -1,22 +1,33 @@
-﻿using PaliBot.Sensors.State;
-using System.Collections.Generic;
+﻿using PaliBot.Model;
+using PaliBot.Sensors.State;
+using PaliBot.Utility;
 
 namespace PaliBot
 {
     public class Announcer
     {
-        private StateSensor[] _stateSensors;
+        private ISessionConverter _sessionConverter;
+        internal IStateSensor[] _stateSensors;
 
-        public Announcer()
+        public Announcer() : this(new SessionConverter(), new StateSensorFactory())
         {
-            _stateSensors = new StateSensor[]
+            
+        }
+
+        internal Announcer(ISessionConverter sessionConverter, IStateSensorFactory stateSensorFactory)
+        {
+            _sessionConverter = sessionConverter;
+
+            _stateSensors = new IStateSensor[]
             {
-                new PossessionStateSensor()
+                stateSensorFactory.Create<PossessionStateSensor>()
             };
         }
 
-        public void Update(Frame frame)
+        public void Update(ISession session)
         {
+            var frame = _sessionConverter.ToFrame(session);
+            
             for (var i = 0; i < _stateSensors.Length; i++)
             {
                 _stateSensors[i].Update(frame);
