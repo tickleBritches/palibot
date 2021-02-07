@@ -450,48 +450,11 @@ namespace PaliBot.Test.ApiClient
             Assert.AreEqual(1.0f, player.body.up[1]);
             Assert.AreEqual(-0.001f, player.body.up[2]);
 
-
-            //Assert.IsNotNull(player.position);
-            //Assert.AreEqual(3, player.position.Length);
-            //Assert.AreEqual(1.1f, player.position[0]);
-            //Assert.AreEqual(2.2f, player.position[1]);
-            //Assert.AreEqual(3.3f, player.position[2]);
-
             Assert.IsNotNull(player.velocity);
             Assert.AreEqual(3, player.velocity.Length);
             Assert.AreEqual(1.1f, player.velocity[0]);
             Assert.AreEqual(2.2f, player.velocity[1]);
             Assert.AreEqual(3.3f, player.velocity[2]);
-
-            //Assert.IsNotNull(player.lhand);
-            //Assert.AreEqual(3, player.lhand.Length);
-            //Assert.AreEqual(1.1f, player.lhand[0]);
-            //Assert.AreEqual(2.2f, player.lhand[1]);
-            //Assert.AreEqual(3.3f, player.lhand[2]);
-
-            //Assert.IsNotNull(player.rhand);
-            //Assert.AreEqual(3, player.rhand.Length);
-            //Assert.AreEqual(1.1f, player.rhand[0]);
-            //Assert.AreEqual(2.2f, player.rhand[1]);
-            //Assert.AreEqual(3.3f, player.rhand[2]);
-
-            //Assert.IsNotNull(player.forward);
-            //Assert.AreEqual(3, player.forward.Length);
-            //Assert.AreEqual(1.1f, player.forward[0]);
-            //Assert.AreEqual(2.2f, player.forward[1]);
-            //Assert.AreEqual(3.3f, player.forward[2]);
-
-            //Assert.IsNotNull(player.left);
-            //Assert.AreEqual(3, player.left.Length);
-            //Assert.AreEqual(1.1f, player.left[0]);
-            //Assert.AreEqual(2.2f, player.left[1]);
-            //Assert.AreEqual(3.3f, player.left[2]);
-
-            //Assert.IsNotNull(player.up);
-            //Assert.AreEqual(3, player.up.Length);
-            //Assert.AreEqual(1.1f, player.up[0]);
-            //Assert.AreEqual(2.2f, player.up[1]);
-            //Assert.AreEqual(3.3f, player.up[2]);
 
             Assert.IsNotNull(player.stats);
             Assert.AreEqual(5, player.stats.points);
@@ -508,7 +471,7 @@ namespace PaliBot.Test.ApiClient
             Assert.AreEqual(5, player.stats.shots_taken);
         }
 
-        [TestMethod]
+       [TestMethod]
        public void IgnoresFetchErrors() 
         {
             var apiConfig = new ApiConfig();
@@ -544,7 +507,7 @@ namespace PaliBot.Test.ApiClient
             var apiConfig = new ApiConfig();
             var mockApiWebClient = new Mock<IApiWebClient>();
             mockApiWebClient.SetupSequence(x => x.DownloadString($"http://127.0.0.1:{apiConfig.Port}/session"))
-                .Returns("notjson")
+                .Returns("{notjson")
                 .Returns(SAMPLE_SESSION);
 
             var apiClient = new PaliBot.ApiClient.ApiClient(apiConfig, mockApiWebClient.Object);
