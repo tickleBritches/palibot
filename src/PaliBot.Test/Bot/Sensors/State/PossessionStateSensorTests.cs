@@ -1,10 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PaliBot.Model;
+using PaliBot.Model.Frame;
 using PaliBot.Sensors.State;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace PaliBot.Test.Bot.Sensors.State
 {

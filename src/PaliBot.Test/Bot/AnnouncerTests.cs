@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using PaliBot.ApiClient;
-using PaliBot.Model;
+using PaliBot.Model.Frame;
 using PaliBot.Sensors.State;
 using PaliBot.Utility;
 using System.Linq;

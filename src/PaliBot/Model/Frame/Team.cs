@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PaliBot.Model
+namespace PaliBot.Model.Frame
 {
     public interface ITeam
     {

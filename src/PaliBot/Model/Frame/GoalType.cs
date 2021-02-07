@@ -1,4 +1,4 @@
-﻿namespace PaliBot.Model
+﻿namespace PaliBot.Model.Frame
 {
     public enum GoalType
     {

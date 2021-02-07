@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace PaliBot.Model
+namespace PaliBot.Model.Frame
 {
     public interface IOrientation
     {

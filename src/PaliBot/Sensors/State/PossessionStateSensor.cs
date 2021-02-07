@@ -1,4 +1,4 @@
-﻿using PaliBot.Model;
+﻿using PaliBot.Model.Frame;
 
 namespace PaliBot.Sensors.State
 {
