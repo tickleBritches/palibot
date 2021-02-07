@@ -16,7 +16,7 @@ namespace PaliBot.ApiClient
         private Thread parseThread;
 
         private object sessionJsonLock = new object();
-        private string sessionJson = String.Empty;
+        private volatile string sessionJson = String.Empty;
 
         private volatile bool _running = false;
 
@@ -44,8 +44,8 @@ namespace PaliBot.ApiClient
         {
             _running = true;
 
-            sessionThread.Start();
             parseThread.Start();
+            sessionThread.Start();
         }
 
         public void Stop()
@@ -83,8 +83,9 @@ namespace PaliBot.ApiClient
                 lock (sessionJsonLock)
                 {
                     json = sessionJson;
+                    sessionJson = null;
                 }
-                if (json.Length > 0)
+                if (json != null && json.Length > 0)
                 {
                     try
                     {
@@ -93,7 +94,7 @@ namespace PaliBot.ApiClient
                     }
                     catch
                     {
-                        Console.Error.WriteLine("Error parsing session json");
+                        //TODO: for now.  ultimately, we should not be ignoring errors.  need to at least log them
                     }
                 }
             }

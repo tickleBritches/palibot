@@ -514,6 +514,7 @@ namespace PaliBot.Test.ApiClient
 
             var sessionReset = new AutoResetEvent(false);
             var lastSession = (Session)null;
+
             apiClient.Session += (s, e) =>
             {
                 lastSession = e;
