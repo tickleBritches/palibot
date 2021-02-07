@@ -93,7 +93,7 @@ namespace PaliBot.ApiClient
                     }
                     catch
                     {
-                        //TODO: for now.  ultimately, we should not be ignoring errors.  need to at least log them
+                        Console.Error.WriteLine("Error parsing session json");
                     }
                 }
             }
