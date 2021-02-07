@@ -509,7 +509,7 @@ namespace PaliBot.Test.ApiClient
         }
 
         [TestMethod]
-        public void IgnoresFetchErrors() //TODO: for now.  ultimately, we should not be ignoring errors.  need to at least log them
+       public void IgnoresFetchErrors() 
         {
             var apiConfig = new ApiConfig();
             var mockApiWebClient = new Mock<IApiWebClient>();
@@ -539,7 +539,7 @@ namespace PaliBot.Test.ApiClient
         }
 
         [TestMethod]
-        public void IgnoresParseErrors() //TODO: for now.  ultimately, we should be ignoring errors.  need to at least log them
+        public void IgnoresParseErrors()
         {
             var apiConfig = new ApiConfig();
             var mockApiWebClient = new Mock<IApiWebClient>();

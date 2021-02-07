@@ -68,7 +68,10 @@ namespace PaliBot.ApiClient
                         }
                     }
                 }
-                catch { }
+                catch
+                {
+                    //TODO: for now.  ultimately, we should not be ignoring errors.  need to at least log them
+                }
             }
         }
 
@@ -88,7 +91,10 @@ namespace PaliBot.ApiClient
                         var session = JsonSerializer.Deserialize<Session>(json);
                         Session(this, session);
                     }
-                    catch { }
+                    catch
+                    {
+                        //TODO: for now.  ultimately, we should not be ignoring errors.  need to at least log them
+                    }
                 }
             }
         }
