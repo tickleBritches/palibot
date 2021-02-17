@@ -2,6 +2,12 @@
 
 namespace PaliBot.Sensors.State
 {
+    public interface IPossessionStateSensor: IStateSensor
+    {
+        IPlayer Player { get; }
+        HandSide? Hand { get; }
+    }
+
     /// <summary>
     /// This sensor attempts to identify when a player is actually holding the disc.  This is necessary
     /// as the session date coming from the Echo API will continue to report possession for a few seconds
@@ -9,13 +15,13 @@ namespace PaliBot.Sensors.State
     /// disc is showing as in game.  Currently the approach here is to check if the disc position is 
     /// actually close to the session-reported player's hands
     /// </summary>
-    public class PossessionStateSensor : IStateSensor
+    public class PossessionStateSensor : IPossessionStateSensor
     {
-        internal const float MAX_HAND_DISTANCE = 0.25f;
+        internal const float MIN_HAND_DISTANCE = 0.2f;
+        internal const float MAX_HAND_DISTANCE = 0.5f;
 
         public IPlayer Player { get; private set; }
         public HandSide? Hand { get; private set; }
-
 
         public void Update(IFrame frame)
         {
@@ -29,19 +35,22 @@ namespace PaliBot.Sensors.State
             var lhandDistance = (frame.Disc.Pose.Position - frame.LastPossessionPlayer.LeftHand.Position).Length();
             var rhandDistance = (frame.Disc.Pose.Position - frame.LastPossessionPlayer.RightHand.Position).Length();
 
-            var currentlyLeft = lhandDistance < MAX_HAND_DISTANCE && lhandDistance < rhandDistance;
-            var currentlyRight = rhandDistance < MAX_HAND_DISTANCE && rhandDistance <= lhandDistance;
-
-            if (currentlyLeft || currentlyRight)
+            if (Player == null)
             {
-                Player = frame.LastPossessionPlayer;
-                Hand = currentlyLeft ? HandSide.Left : HandSide.Right;
+                if (lhandDistance <= MIN_HAND_DISTANCE || rhandDistance <= MIN_HAND_DISTANCE)
+                {
+                    Player = frame.LastPossessionPlayer;
+                    Hand = lhandDistance < rhandDistance ? HandSide.Left : HandSide.Right;
+                }
             }
             else
             {
-                Player = null;
-                Hand = null;
+                if (lhandDistance > MAX_HAND_DISTANCE && rhandDistance > MAX_HAND_DISTANCE)
+                {
+                    Player = null;
+                    Hand = null;
+                }
             }
-        }
+        }        
     }
 }

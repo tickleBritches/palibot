@@ -62,4 +62,14 @@ namespace PaliBot.Model.Frame
         IPose IPlayer.RightHand => RightHand;
         ITeam IPlayer.Team => Team;
     }
+
+    public static class IPlayerExtensions
+    {
+        public static bool IsSame(this IPlayer a, IPlayer b)
+        {
+            if (a == null && b == null) return true;
+            if (a == null || b == null) return false;
+            return a.Id == b.Id;
+        }
+    }
 }
