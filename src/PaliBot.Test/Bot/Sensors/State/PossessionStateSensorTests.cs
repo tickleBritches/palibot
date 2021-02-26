@@ -1,10 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PaliBot.Model;
+using PaliBot.Model.Frame;
 using PaliBot.Sensors.State;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace PaliBot.Test.Bot.Sensors.State
 {
@@ -83,19 +80,19 @@ namespace PaliBot.Test.Bot.Sensors.State
         [DataRow(false)]
         public void Update_SelectsLeftHand(bool rightHandInRange)
         {
-            var max = PossessionStateSensor.MAX_HAND_DISTANCE;
+            var min = PossessionStateSensor.MIN_HAND_DISTANCE;
 
             var player = new Player
             {
                 LeftHand =
                 {
-                    Position = new Vector3(max / 3, max / 3, max / 3)
+                    Position = new Vector3(min / 3, min / 3, min / 3)
                 },
                 RightHand =
                 {
                     Position = rightHandInRange
-                        ? new Vector3(max / 2, max / 2 , max / 2)
-                        : new Vector3(max, max, max)
+                        ? new Vector3(min / 2, min / 2 , min / 2)
+                        : new Vector3(min, min, min)
                 }
             };
 
@@ -121,19 +118,19 @@ namespace PaliBot.Test.Bot.Sensors.State
         [DataRow(false)]
         public void Update_SelectsRightHand(bool leftHandInRange)
         {
-            var max = PossessionStateSensor.MAX_HAND_DISTANCE;
+            var min = PossessionStateSensor.MIN_HAND_DISTANCE;
 
             var player = new Player
             {
                 LeftHand =
                 {
                     Position = leftHandInRange
-                        ? new Vector3(max / 2, max / 2 , max / 2)
-                        : new Vector3(max, max, max)
+                        ? new Vector3(min / 2, min / 2 , min / 2)
+                        : new Vector3(min, min, min)
                 },
                 RightHand =
                 {
-                    Position = new Vector3(max / 3, max / 3, max / 3)
+                    Position = new Vector3(min / 3, min / 3, min / 3)
                 }
             };
 
@@ -152,6 +149,94 @@ namespace PaliBot.Test.Bot.Sensors.State
             //
             Assert.AreEqual(player, sensor.Player);
             Assert.AreEqual(HandSide.Right, sensor.Hand);
+        }
+
+        [TestMethod]
+        public void Update_NullIfExceedMax()
+        {
+            var min = PossessionStateSensor.MIN_HAND_DISTANCE;
+            var max = PossessionStateSensor.MAX_HAND_DISTANCE;
+
+            var playerState1 = new Player
+            {
+                LeftHand = { Position = new Vector3(min / 2, min / 2, min / 2) },
+                RightHand = { Position = new Vector3(min / 3, min / 3, min / 3) }
+            };
+
+            var playerState2 = new Player
+            {
+                LeftHand = { Position = new Vector3(max, max, max) },
+                RightHand = { Position = new Vector3(max, max, max) }
+            };
+
+            var frame = new Frame
+            {
+                Match = { Status = GameStatus.Playing },
+                Disc =
+                {
+                    Pose = { Position = new Vector3(0,0,0) }
+                },
+                LastPossessionPlayer = playerState1
+            };
+
+            var sensor = new PossessionStateSensor();
+            
+            // state 1
+            
+            sensor.Update(frame);
+            Assert.AreEqual(playerState1, sensor.Player);
+            Assert.AreEqual(HandSide.Right, sensor.Hand);
+
+            // state 2
+            frame.LastPossessionPlayer = playerState2;
+            sensor.Update(frame);
+
+            Assert.IsNull(sensor.Player);
+            Assert.IsNull(sensor.Hand);
+        }
+
+        [DataTestMethod]
+        [DataRow(0,1)]
+        [DataRow(1, 0)]
+        public void Update_MaintainsPossession(float leftOffset, float rightOffset)
+        {
+            var min = PossessionStateSensor.MIN_HAND_DISTANCE;
+            var max = PossessionStateSensor.MAX_HAND_DISTANCE;
+
+            var playerState1 = new Player
+            {
+                LeftHand = { Position = new Vector3(min / 2, min / 2, min / 2) },
+                RightHand = { Position = new Vector3(min / 3, min / 3, min / 3) }
+            };
+
+            var playerState2 = new Player
+            {
+                LeftHand = { Position = new Vector3(max + leftOffset, 0, 0) },
+                RightHand = { Position = new Vector3(max + rightOffset, 0, 0) }
+            };
+
+            var frame = new Frame
+            {
+                Match = { Status = GameStatus.Playing },
+                Disc =
+                {
+                    Pose = { Position = new Vector3(0,0,0) }
+                },
+                LastPossessionPlayer = playerState1
+            };
+
+            var sensor = new PossessionStateSensor();
+
+            // state 1
+
+            sensor.Update(frame);
+            Assert.AreEqual(playerState1, sensor.Player);
+
+            // state 2
+            frame.LastPossessionPlayer = playerState2;
+            
+            sensor.Update(frame);
+            Assert.AreEqual(playerState1, sensor.Player);
         }
     }
 }

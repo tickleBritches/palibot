@@ -1,9 +1,8 @@
 ﻿using PaliBot.Model;
+using PaliBot.Model.Frame;
 using PaliBot.Numerics;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PaliBot.Utility
 {

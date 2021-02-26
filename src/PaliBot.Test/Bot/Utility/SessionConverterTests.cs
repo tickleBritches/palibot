@@ -1,11 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PaliBot.ApiClient;
-using PaliBot.Model;
+using PaliBot.Model.Frame;
 using PaliBot.Utility;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 using Utf8Json;
 
 namespace PaliBot.Test.Bot.Utility

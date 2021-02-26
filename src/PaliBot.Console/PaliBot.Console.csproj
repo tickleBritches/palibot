@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PaliBot.ApiClient\PaliBot.ApiClient.csproj" />
     <ProjectReference Include="..\PaliBot\PaliBot.csproj" />
   </ItemGroup>
 
