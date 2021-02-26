@@ -1,4 +1,5 @@
 ﻿using PaliBot.Model.Frame;
+using System.Numerics;
 
 namespace PaliBot.Sensors.State
 {
@@ -32,24 +33,18 @@ namespace PaliBot.Sensors.State
                 return;
             }
 
-            var lhandDistance = (frame.Disc.Pose.Position - frame.LastPossessionPlayer.LeftHand.Position).Length();
-            var rhandDistance = (frame.Disc.Pose.Position - frame.LastPossessionPlayer.RightHand.Position).Length();
-
-            if (Player == null)
+            if (frame.Disc.Velocity == Vector3.Zero)
             {
-                if (lhandDistance <= MIN_HAND_DISTANCE || rhandDistance <= MIN_HAND_DISTANCE)
-                {
-                    Player = frame.LastPossessionPlayer;
-                    Hand = lhandDistance < rhandDistance ? HandSide.Left : HandSide.Right;
-                }
+                var lhandDistance = (frame.Disc.Pose.Position - frame.LastPossessionPlayer.LeftHand.Position).Length();
+                var rhandDistance = (frame.Disc.Pose.Position - frame.LastPossessionPlayer.RightHand.Position).Length();
+
+                Player = frame.LastPossessionPlayer;
+                Hand = lhandDistance < rhandDistance ? HandSide.Left : HandSide.Right;
             }
             else
             {
-                if (lhandDistance > MAX_HAND_DISTANCE && rhandDistance > MAX_HAND_DISTANCE)
-                {
-                    Player = null;
-                    Hand = null;
-                }
+                Player = null;
+                Hand = null;
             }
         }        
     }
