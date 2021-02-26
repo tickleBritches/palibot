@@ -8,6 +8,8 @@ namespace PaliBot.ApiClient
     public class ApiClient
     {
         public event EventHandler<Session> Session;
+        public event EventHandler<Exception> FetchError;
+        public event EventHandler<Exception> ParseError;
 
         private IApiWebClient _webClient;
         private string _sessionUrl;
@@ -68,9 +70,9 @@ namespace PaliBot.ApiClient
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    //TODO: for now.  ultimately, we should not be ignoring errors.  need to at least log them
+                    FetchError?.Invoke(this, e);
                 }
             }
         }
@@ -90,11 +92,11 @@ namespace PaliBot.ApiClient
                     try
                     {
                         var session = JsonSerializer.Deserialize<Session>(json);
-                        Session(this, session);
+                        Session?.Invoke(this, session);
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        //TODO: for now.  ultimately, we should not be ignoring errors.  need to at least log them
+                        ParseError?.Invoke(this, e);
                     }
                 }
             }

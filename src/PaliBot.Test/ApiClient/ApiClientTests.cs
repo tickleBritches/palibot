@@ -472,7 +472,7 @@ namespace PaliBot.Test.ApiClient
         }
 
        [TestMethod]
-       public void IgnoresFetchErrors() 
+       public void RaisesFetchErrors() 
         {
             var apiConfig = new ApiConfig();
             var mockApiWebClient = new Mock<IApiWebClient>();
@@ -480,10 +480,46 @@ namespace PaliBot.Test.ApiClient
                 .Throws<Exception>()
                 .Returns(SAMPLE_SESSION);
 
-            var apiClient = new PaliBot.ApiClient.ApiClient(apiConfig, mockApiWebClient.Object);
+            var sessionReset = new AutoResetEvent(false);
+            var lastSession = (Session)null;
+            var errorCount = 0;
+
+            var apiClient = new PaliBot.ApiClient.ApiClient(apiConfig, mockApiWebClient.Object);            
+            apiClient.Session += (s, e) =>
+            {
+                lastSession = e;
+                sessionReset.Set();
+            };
+            apiClient.FetchError += (s, e) =>
+            {
+                errorCount++;
+            };
+
+            //
+
+            apiClient.Start();
+            sessionReset.WaitOne();
+            apiClient.Stop();
+
+            //
+
+            Assert.IsNotNull(lastSession);
+            Assert.AreEqual(1, errorCount);
+        }
+
+        [TestMethod]
+        public void IgnoresFetchErrorsIfNotWired()
+        {
+            var apiConfig = new ApiConfig();
+            var mockApiWebClient = new Mock<IApiWebClient>();
+            mockApiWebClient.SetupSequence(x => x.DownloadString($"http://127.0.0.1:{apiConfig.Port}/session"))
+                .Throws<Exception>()
+                .Returns(SAMPLE_SESSION);
 
             var sessionReset = new AutoResetEvent(false);
             var lastSession = (Session)null;
+
+            var apiClient = new PaliBot.ApiClient.ApiClient(apiConfig, mockApiWebClient.Object);
             apiClient.Session += (s, e) =>
             {
                 lastSession = e;
@@ -502,7 +538,7 @@ namespace PaliBot.Test.ApiClient
         }
 
         [TestMethod]
-        public void IgnoresParseErrors()
+        public void RaisesParseErrors()
         {
             var apiConfig = new ApiConfig();
             var mockApiWebClient = new Mock<IApiWebClient>();
@@ -510,11 +546,48 @@ namespace PaliBot.Test.ApiClient
                 .Returns("{notjson")
                 .Returns(SAMPLE_SESSION);
 
+
+            var sessionReset = new AutoResetEvent(false);
+            var lastSession = (Session)null;
+            var errorCount = 0;
+
             var apiClient = new PaliBot.ApiClient.ApiClient(apiConfig, mockApiWebClient.Object);
+            apiClient.Session += (s, e) =>
+            {
+                lastSession = e;
+                sessionReset.Set();
+            };
+            apiClient.ParseError += (s, e) =>
+            {
+                errorCount++;
+            };
+
+            //
+
+            apiClient.Start();
+            sessionReset.WaitOne();
+            apiClient.Stop();
+
+            //
+
+            Assert.IsNotNull(lastSession);
+            Assert.AreEqual(1, errorCount);
+        }
+
+        [TestMethod]
+        public void IgnoresParseErrorsIfNotWired()
+        {
+            var apiConfig = new ApiConfig();
+            var mockApiWebClient = new Mock<IApiWebClient>();
+            mockApiWebClient.SetupSequence(x => x.DownloadString($"http://127.0.0.1:{apiConfig.Port}/session"))
+                .Returns("{notjson")
+                .Returns(SAMPLE_SESSION);
+
 
             var sessionReset = new AutoResetEvent(false);
             var lastSession = (Session)null;
 
+            var apiClient = new PaliBot.ApiClient.ApiClient(apiConfig, mockApiWebClient.Object);
             apiClient.Session += (s, e) =>
             {
                 lastSession = e;
@@ -530,6 +603,31 @@ namespace PaliBot.Test.ApiClient
             //
 
             Assert.IsNotNull(lastSession);
+        }
+
+        [TestMethod]
+        public void PlaysSilently() // when Session event isn't wired up
+        {
+            var apiConfig = new ApiConfig();
+            var mockApiWebClient = new Mock<IApiWebClient>();
+            mockApiWebClient.SetupSequence(x => x.DownloadString($"http://127.0.0.1:{apiConfig.Port}/session"))
+                .Returns(SAMPLE_SESSION)
+                .Returns("{notjson");
+
+
+            var sessionReset = new AutoResetEvent(false);
+
+            var apiClient = new PaliBot.ApiClient.ApiClient(apiConfig, mockApiWebClient.Object);
+            apiClient.ParseError += (s, e) =>
+            {
+                sessionReset.Set();
+            };
+
+            //
+
+            apiClient.Start();
+            sessionReset.WaitOne();
+            apiClient.Stop();
         }
 
         [TestMethod]
